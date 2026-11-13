@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ওঠেন · Othen — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --g:#006a4e; --g2:#0b8a63; --gl:#e3f3ec; --r:#f42a41; --ink:#13231c; --mut:#6b7c74;
+    --bg:#f4f7f5; --card:#fff; --line:#e4ebe7; --rad:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,'Hind Siliguri',system-ui,sans-serif;color:var(--ink);
+    background:radial-gradient(1200px 600px at 10% 0%,#d9efe5 0%,transparent 60%),radial-gradient(900px 600px at 100% 100%,#fde3e6 0%,transparent 55%),#eef3f0;min-height:100vh}
+  .bn{font-family:'Hind Siliguri',Inter,sans-serif}
+  button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  select,input{font:inherit;color:inherit}
+
+  /* ---------- stage ---------- */
+  .stage{display:flex;gap:56px;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;flex-wrap:wrap}
+  .pitch{max-width:440px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--g),var(--g2));display:grid;place-items:center;box-shadow:0 10px 24px #006a4e44;position:relative}
+  .logo::after{content:"";position:absolute;right:8px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--r);border:2px solid #fff}
+  .pitch h1{font-size:40px;line-height:1.05;letter-spacing:-.5px}
+  .pitch h1 small{display:block;font-size:16px;color:var(--mut);font-weight:500;letter-spacing:0;margin-top:4px}
+  .tagline{font-size:22px;margin:22px 0 6px;font-weight:600}
+  .pitch p{color:var(--mut);line-height:1.55}
+  .feat{list-style:none;margin:20px 0 26px;display:grid;gap:10px}
+  .feat li{display:flex;gap:12px;align-items:flex-start;background:#ffffffaa;border:1px solid #fff;padding:12px 14px;border-radius:14px;backdrop-filter:blur(6px)}
+  .feat b{display:block;font-size:14px}.feat span{font-size:13px;color:var(--mut)}
+  .feat i{font-style:normal;font-size:20px}
+  .demo-note{margin-top:22px;font-size:12px;color:var(--mut);display:flex;gap:8px;align-items:center}
+  .demo-note b{background:#fff3cd;color:#8a6200;padding:2px 8px;border-radius:6px;font-size:11px}
+
+  /* ---------- phone ---------- */
+  .phone{width:390px;height:820px;border-radius:52px;background:#0d1512;padding:12px;box-shadow:0 40px 80px #0b2a1f40,inset 0 0 0 2px #2a3631;position:relative;flex-shrink:0}
+  .screen{width:100%;height:100%;border-radius:42px;overflow:hidden;background:var(--bg);position:relative;display:flex;flex-direction:column}
+  .statusbar{height:0;opacity:0;overflow:hidden;flex-shrink:0;display:flex;justify-content:space-between;align-items:flex-end;padding:0 30px 6px;font-size:14px;font-weight:600;transition:height .35s ease,opacity .35s ease}
+  .phone:hover .statusbar,.screen.sb-on .statusbar{height:50px;opacity:1}
+  .appbar{display:flex;align-items:center;justify-content:space-between;padding:22px 18px 10px;transition:padding .35s ease}
+  .phone:hover .appbar,.screen.sb-on .appbar{padding-top:6px}
+  .appbar .brand{gap:10px}
+  .appbar .logo{width:36px;height:36px;border-radius:11px;box-shadow:none}
+  .appbar .logo::after{width:7px;height:7px;right:5px;top:5px;border-width:1.5px}
+  .appbar .nm{font-weight:700;font-size:18px;line-height:1}
+  .appbar .nm small{display:block;font-size:11px;color:var(--mut);font-weight:500;margin-top:3px}
+  .iconbtn{width:38px;height:38px;border-radius:12px;background:#fff;display:grid;place-items:center;border:1px solid var(--line);position:relative}
+  .iconbtn .badge{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--r);border:2px solid #fff}
+  main{flex:1;overflow-y:auto;padding:4px 16px 20px;scrollbar-width:none}
+  main::-webkit-scrollbar{display:none}
+  .tabs{display:flex;justify-content:space-around;background:#fff;border-top:1px solid var(--line);padding:8px 6px 22px;flex-shrink:0}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--mut);padding:4px 10px;border-radius:12px;font-weight:500}
+  .tab svg{width:22px;height:22px}
+  .tab.on{color:var(--g)}
+  .tab.on svg{background:var(--gl);border-radius:10px;padding:2px;width:40px;box-sizing:content-box}
+  .tab.helper.on{color:#b45309}.tab.helper.on svg{background:#fef3c7}
+
+  /* ---------- common ---------- */
+  .card{background:var(--card);border-radius:var(--rad);padding:14px;border:1px solid var(--line);margin-bottom:12px}
+  h2{font-size:21px;letter-spacing:-.3px}
+  .muted{color:var(--mut);font-size:13px}
+  .btn{border-radius:12px;padding:12px 16px;font-weight:600;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .btn.primary{background:var(--g);color:#fff}
+  .btn.primary:hover{background:#00573f}
+  .btn.ghost{background:var(--gl);color:var(--g)}
+  .btn.red{background:var(--r);color:#fff}
+  .btn.block{width:100%}
+  .btn:active{transform:scale(.98)}
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{white-space:nowrap;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:500}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .rbadge{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:24px;padding:0 7px;border-radius:7px;color:#fff;font-weight:700;font-size:12px}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--gl);color:var(--g)}
+  .pill.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--r);animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .row{display:flex;align-items:center;gap:10px}
+  .sp{flex:1}
+  .sec-t{font-size:13px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px;margin:16px 2px 8px}
+
+  /* ---------- plan ---------- */
+  .hello{margin:4px 2px 12px}
+  .search{position:relative;padding:6px 14px 14px}
+  .field{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .field:nth-of-type(2){border-bottom:none}
+  .field label{display:flex;flex-direction:column;font-size:11px;color:var(--mut);font-weight:600;flex:1;text-transform:uppercase;letter-spacing:.5px}
+  .field select{border:none;background:none;font-size:16px;font-weight:600;padding:3px 0;outline:none;text-transform:none;letter-spacing:0;appearance:none;cursor:pointer;width:100%}
+  .dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+  .dot.g{background:var(--g);box-shadow:0 0 0 4px var(--gl)}
+  .dot.r{background:var(--r);box-shadow:0 0 0 4px #fde3e6}
+  .swap{position:absolute;right:14px;top:44px;width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--line);font-size:17px;box-shadow:0 2px 6px #0001;z-index:2}
+  .search .btn{margin-top:8px}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .summary div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}
+  .summary b{display:block;font-size:19px}
+  .summary span{font-size:11px;color:var(--mut)}
+  .mapwrap{border-radius:14px;overflow:hidden;background:#e9f0eb}
+  .mapwrap svg{display:block;width:100%}
+  .tl{position:relative;padding-left:26px}
+  .tl-stop{position:relative;font-weight:600;font-size:14px;padding:4px 0}
+  .tl-stop::before{content:"";position:absolute;left:-23px;top:7px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--c,#333)}
+  .tl-stop small{display:block;font-weight:400;color:var(--mut);font-size:12px}
+  .tl-leg{position:relative;margin:4px 0;padding:10px 12px;border-radius:12px;background:#f6f9f7}
+  .tl-leg::before{content:"";position:absolute;left:-18px;top:-8px;bottom:-8px;width:4px;border-radius:2px;background:var(--c)}
+  .tl-leg .nm{font-weight:600;font-size:14px}
+  .tl-leg .meta{font-size:12px;color:var(--mut);margin-top:3px}
+  .eta{font-weight:700;color:var(--g)}
+  .tl-walk{font-size:12px;color:var(--mut);padding:6px 0 6px;position:relative}
+  .tl-walk::before{content:"";position:absolute;left:-18px;top:0;bottom:0;border-left:3px dotted #9aa}
+  .paybar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding-top:14px}
+  .nearby .bus{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .nearby .bus:last-child{border-bottom:none}
+  .occ{height:5px;border-radius:3px;background:#e7ece9;overflow:hidden;width:64px;margin-top:5px}
+  .occ i{display:block;height:100%;border-radius:3px}
+  .empty{text-align:center;padding:26px 10px;color:var(--mut);font-size:14px}
+
+  /* ---------- live ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:6px}
+  .bus-detail .top{display:flex;gap:12px;align-items:center}
+  .bus-detail .bigicon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;color:#fff}
+  .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .kv div{background:#f6f9f7;border-radius:10px;padding:8px 10px}
+  .kv span{display:block;font-size:11px;color:var(--mut)}
+  .kv b{font-size:14px}
+
+  /* ---------- tickets ---------- */
+  .wallet{background:linear-gradient(135deg,#00573f,#0b8a63 60%,#18a777);color:#fff;border:none;position:relative;overflow:hidden}
+  .wallet::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:#ffffff14}
+  .wallet .bal{font-size:32px;font-weight:800;margin:4px 0 12px}
+  .wallet .btn{background:#ffffff26;color:#fff;padding:9px 14px;font-size:13px}
+  .ticket{display:flex;gap:12px;align-items:center}
+  .ticket .qr{width:74px;flex-shrink:0}
+  .ticket .t{font-weight:700;font-size:15px}
+  .hist{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .hist:last-child{border-bottom:none}
+
+  /* ---------- helper ---------- */
+  .hprof{display:flex;gap:12px;align-items:center}
+  .avatar{width:46px;height:46px;border-radius:14px;background:#fde68a;color:#92400e;font-weight:800;display:grid;place-items:center;font-size:18px}
+  .golive{display:flex;align-items:center;gap:14px;cursor:pointer;transition:.2s;user-select:none}
+  .golive .gps{width:52px;height:52px;border-radius:50%;background:#eef1ef;display:grid;place-items:center;position:relative;flex-shrink:0}
+  .golive.on{background:#063d2e;color:#fff;border-color:#063d2e}
+  .golive.on .gps{background:var(--g2)}
+  .golive.on .gps::before,.golive.on .gps::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #34d399;animation:ring 2s infinite}
+  .golive.on .gps::after{animation-delay:1s}
+  @keyframes ring{from{transform:scale(1);opacity:.9}to{transform:scale(1.8);opacity:0}}
+  .golive .muted{transition:.2s}.golive.on .muted{color:#a7d7c5}
+  .switch{width:50px;height:30px;border-radius:15px;background:#d5ddd9;position:relative;transition:.2s;flex-shrink:0}
+  .switch::after{content:"";position:absolute;left:3px;top:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px #0003}
+  .golive.on .switch{background:#34d399}.golive.on .switch::after{left:23px}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}
+  .stat span{font-size:11.5px;color:var(--mut);font-weight:500}
+  .stat b{display:block;font-size:22px;margin-top:2px}
+  .stat .pm{display:flex;gap:6px;margin-top:6px}
+  .stat .pm button{width:30px;height:26px;border-radius:8px;background:var(--gl);color:var(--g);font-weight:700}
+  .actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+  .act{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;font-weight:600}
+  .act i{font-style:normal;font-size:22px}
+  .feed .it{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;animation:slidein .4s}
+  .feed .it:last-child{border-bottom:none}
+  @keyframes slidein{from{opacity:0;transform:translateY(-6px)}}
+  .ico{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;font-size:15px;flex-shrink:0}
+
+  /* ---------- sheet ---------- */
+  .overlay{position:absolute;inset:0;background:#0b1a1460;opacity:0;pointer-events:none;transition:.25s;z-index:30}
+  .overlay.on{opacity:1;pointer-events:auto}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:26px 26px 0 0;padding:10px 18px 30px;z-index:31;transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.9,.3,1);max-height:88%;overflow-y:auto}
+  .sheet.on{transform:none}
+  .grab{width:40px;height:5px;border-radius:3px;background:#d6ddd9;margin:0 auto 14px}
+  .sheet h3{font-size:19px;margin-bottom:4px}
+  .method{display:flex;align-items:center;gap:12px;padding:12px;border:1.5px solid var(--line);border-radius:14px;margin-top:8px;cursor:pointer;transition:.15s}
+  .method.on{border-color:var(--g);background:#f3faf7}
+  .method .mlogo{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px}
+  .method .radio{margin-left:auto;width:20px;height:20px;border-radius:50%;border:2px solid #c9d3ce}
+  .method.on .radio{border:6px solid var(--g)}
+  .pin{display:flex;gap:10px;justify-content:center;margin:20px 0}
+  .pin input{width:46px;height:54px;text-align:center;font-size:22px;border:1.5px solid var(--line);border-radius:12px;outline:none}
+  .pin input:focus{border-color:var(--g)}
+  .spinner{width:46px;height:46px;border:4px solid var(--gl);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite;margin:30px auto 14px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .success{text-align:center}
+  .tick{width:64px;height:64px;border-radius:50%;background:var(--g);color:#fff;display:grid;place-items:center;font-size:32px;margin:6px auto 10px;animation:pop .4s}
+  @keyframes pop{from{transform:scale(.3)}}
+  .eticket{border:1.5px dashed #c8d4ce;border-radius:16px;padding:14px;margin:16px 0;text-align:left}
+  .eticket .qr{width:150px;margin:6px auto 10px}
+  .viewfinder{height:240px;border-radius:18px;background:#101814;position:relative;overflow:hidden;margin:14px 0}
+  .viewfinder .box{position:absolute;inset:40px 70px;border:3px solid #34d399;border-radius:16px}
+  .viewfinder .line{position:absolute;left:70px;right:70px;height:2px;background:#34d399;box-shadow:0 0 12px #34d399;animation:scan 1.4s ease-in-out infinite alternate;top:40px}
+  @keyframes scan{to{top:196px}}
+  .amts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+  .amts button{padding:14px 0;border-radius:12px;background:#f3f6f4;font-weight:700;font-size:16px;border:1.5px solid transparent}
+  .amts button.on{border-color:var(--g);background:var(--gl);color:var(--g)}
+  .toast{position:absolute;left:16px;right:16px;top:58px;background:var(--ink);color:#fff;padding:12px 14px;border-radius:14px;font-size:13.5px;z-index:40;transform:translateY(-140%);transition:.3s;box-shadow:0 10px 30px #0004}
+  .toast.on{transform:none}
+
+  @media (max-width:480px){
+    .stage{padding:0;gap:0}
+    .phone{width:100vw;height:100vh;height:100dvh;border-radius:0;padding:0;box-shadow:none}
+    .screen{border-radius:0}
+    .pitch{padding:28px 20px;order:2}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <aside class="pitch">
+    <div class="brand">
+      <div class="logo"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 20v-3M16 20v-3"/><circle cx="8" cy="14" r=".6" fill="#fff"/><circle cx="16" cy="14" r=".6" fill="#fff"/></svg></div>
+      <h1><span class="bn">ওঠেন</span><small>Othen — Get on board!</small></h1>
+    </div>
+    <div class="tagline bn">লোকাল বাস, এখন হাতের মুঠোয়।</div>
+    <p>Track every local bus live through the helper's phone, find which bus to take, and pay your fare without cash.</p>
+    <ul class="feat">
+      <li><i>📡</i><div><b>Live tracking via helper phones</b><span>Each bus's helper shares GPS, so no hardware needs to be installed on the bus</span></div></li>
+      <li><i>🧭</i><div><b>Smart route planner</b><span>Pick From → To, get the bus (or buses) to take, transfers and the path</span></div></li>
+      <li><i>💳</i><div><b>Cashless fare</b><span>bKash, Nagad, Rocket or wallet. Show the QR ticket to the helper</span></div></li>
+    </ul>
+    <div class="demo-note"><b>DEMO</b> Prototype only — all buses, payments and locations are simulated.</div>
+  </aside>
+
+  <div class="phone">
+    <div class="screen" id="screen">
+      <div class="statusbar"><span id="clock">9:41</span><span>📶 4G 🔋</span></div>
+      <header class="appbar">
+        <div class="brand">
+          <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="14" rx="3"/><path d="M4 11h16M8 20v-3M16 20v-3"/></svg></div>
+          <div class="nm"><span class="bn">ওঠেন</span><small>Othen</small></div>
+        </div>
+        <button class="iconbtn" id="bell" title="Notifications"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span class="badge"></span></button>
+      </header>
+      <main id="view"></main>
+      <nav class="tabs" id="tabs">
+        <button class="tab on" data-tab="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>Plan</button>
+        <button class="tab" data-tab="live"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Live map</button>
+        <button class="tab" data-tab="tickets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>Tickets</button>
+        <button class="tab helper" data-tab="helper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M6 21v-1a6 6 0 0 1 12 0v1"/><path d="M19 4l2-2M21 7h-2"/></svg>Helper</button>
+      </nav>
+      <div class="overlay" id="overlay"></div>
+      <div class="sheet" id="sheet"></div>
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   DEMO DATA — everything here is simulated
+   ========================================================= */
+const APP_NAME = {bn:'ওঠেন', en:'Othen', m:'Get on board!'};
+
+const STOPS = {
+  uttara:{en:'Uttara',bn:'উত্তরা',x:225,y:30},
+  airport:{en:'Airport',bn:'বিমানবন্দর',x:240,y:85},
+  khilkhet:{en:'Khilkhet',bn:'খিলক্ষেত',x:255,y:135},
+  banani:{en:'Banani',bn:'বনানী',x:225,y:185},
+  mohakhali:{en:'Mohakhali',bn:'মহাখালী',x:205,y:232},
+  gulshan:{en:'Gulshan 1',bn:'গুলশান ১',x:268,y:212},
+  badda:{en:'Badda',bn:'বাড্ডা',x:322,y:238},
+  rampura:{en:'Rampura',bn:'রামপুরা',x:318,y:300},
+  mirpur10:{en:'Mirpur 10',bn:'মিরপুর ১০',x:110,y:150},
+  mirpur1:{en:'Mirpur 1',bn:'মিরপুর ১',x:55,y:188},
+  agargaon:{en:'Agargaon',bn:'আগারগাঁও',x:140,y:220},
+  shyamoli:{en:'Shyamoli',bn:'শ্যামলী',x:82,y:258},
+  mohammadpur:{en:'Mohammadpur',bn:'মোহাম্মদপুর',x:52,y:322},
+  farmgate:{en:'Farmgate',bn:'ফার্মগেট',x:168,y:280},
+  karwan:{en:'Karwan Bazar',bn:'কারওয়ান বাজার',x:188,y:322},
+  dhanmondi:{en:'Dhanmondi 27',bn:'ধানমন্ডি ২৭',x:108,y:336},
+  sciencelab:{en:'Science Lab',bn:'সায়েন্স ল্যাব',x:132,y:382},
+  shahbag:{en:'Shahbag',bn:'শাহবাগ',x:186,y:392},
+  malibagh:{en:'Malibagh',bn:'মালিবাগ',x:266,y:346},
+  motijheel:{en:'Motijheel',bn:'মতিঝিল',x:262,y:424},
+  gulistan:{en:'Gulistan',bn:'গুলিস্তান',x:216,y:446},
+  azimpur:{en:'Azimpur',bn:'আজিমপুর',x:132,y:446},
+  sadarghat:{en:'Sadarghat',bn:'সদরঘাট',x:194,y:510},
+  sayedabad:{en:'Sayedabad',bn:'সায়েদাবাদ',x:282,y:468},
+  jatrabari:{en:'Jatrabari',bn:'যাত্রাবাড়ী',x:322,y:500},
+};
+
+const ROUTES = [
+  {id:'shapla', name:'Shapla Paribahan', bn:'শাপলা পরিবহন', no:'S1', color:'#e63946',
+   stops:['uttara','airport','khilkhet','banani','mohakhali','farmgate','karwan','shahbag','gulistan','sadarghat']},
+  {id:'doel', name:'Doel Transport', bn:'দোয়েল ট্রান্সপোর্ট', no:'D7', color:'#1d6fd8',
+   stops:['mirpur1','mirpur10','agargaon','farmgate','karwan','malibagh','motijheel','jatrabari']},
+  {id:'meghna', name:'Meghna Line', bn:'মেঘনা লাইন', no:'M3', color:'#0a9f6e',
+   stops:['mohammadpur','dhanmondi','sciencelab','shahbag','gulistan','sayedabad','jatrabari']},
+  {id:'kodom', name:'Kodom Express', bn:'কদম এক্সপ্রেস', no:'K5', color:'#f08c00',
+   stops:['mirpur10','mohakhali','gulshan','badda','rampura','malibagh','motijheel']},
+  {id:'shalik', name:'Shalik Seba', bn:'শালিক সেবা', no:'L2', color:'#7b3fe4',
+   stops:['mirpur1','shyamoli','dhanmondi','sciencelab','azimpur','sadarghat']},
+];
+const R = Object.fromEntries(ROUTES.map(r=>[r.id,r]));
+const POPULAR = [['mirpur10','motijheel'],['uttara','sadarghat'],['mohammadpur','badda'],['airport','azimpur']];
+const HELPERS = ['Rahim','Sumon','Kalam','Jewel','Babul','Shafiq','Monir','Rubel','Hasan','Arif','Liton','Shahin','Faruk','Mithu','Rana','Selim','Kabir','Nayeem','Polash','Tanvir'];
+const KM_PER_PX = 0.045, MIN_PER_PX = 0.06;
+
+/* geometry: give each route a small offset so overlapping lines are visible */
+ROUTES.forEach((r,i)=>{
+  const o=(i-2)*2.6;
+  r.pts=r.stops.map(s=>({x:STOPS[s].x+o,y:STOPS[s].y+o*.6}));
+  r.cum=[0];
+  for(let k=1;k<r.pts.length;k++) r.cum.push(r.cum[k-1]+Math.hypot(r.pts[k].x-r.pts[k-1].x,r.pts[k].y-r.pts[k-1].y));
+  r.len=r.cum[r.cum.length-1];
+});
+function pointAt(r,d){
+  let k=0; while(k<r.cum.length-2 && r.cum[k+1]<d) k++;
+  const a=r.pts[k], b=r.pts[k+1], t=(d-r.cum[k])/((r.cum[k+1]-r.cum[k])||1);
+  return {x:a.x+(b.x-a.x)*t, y:a.y+(b.y-a.y)*t, k};
+}
+
+/* simulated buses — in the real app, positions come from helpers' phones */
+const BUSES=[]; let hi=0;
+ROUTES.forEach((r,ri)=>{
+  for(let j=0;j<4;j++){
+    const b={id:`${r.id}-${j}`, route:r.id, d:r.len*(j/4+.08), dir:j%2?-1:1, speed:4+Math.random()*3,
+      plate:`Dhaka Metro-Ba ${11+ri*2+j}-${(4821+ri*731+j*377)%9000+1000}`,
+      helper:HELPERS[hi++%HELPERS.length], occ:Math.floor(30+Math.random()*65), rating:(4.1+Math.random()*.8).toFixed(1)};
+    b.pos=pointAt(r,b.d); BUSES.push(b);
+  }
+});
+const BUSMAP=Object.fromEntries(BUSES.map(b=>[b.id,b]));
+const MYBUS = BUSES[0]; MYBUS.helper='Rahim'; // the helper's own bus in Helper mode
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const state={
+  tab:'plan', from:'mirpur10', to:'shahbag', result:null,
+  liveFilter:null, selBus:null, wallet:350, tickets:[],
+  helper:{online:false, onboard:23, cash:1840, digital:2310, feed:[
+    {t:'cash',a:20,who:'Cash fare',when:'8 min ago'},
+    {t:'bkash',a:35,who:'bKash · 01•••••482',when:'11 min ago'},
+  ]},
+  name:APP_NAME, payMethod:'bkash',
+};
+
+/* =========================================================
+   ROUTE FINDER — Dijkstra over (stop, route) with transfer penalty
+   ========================================================= */
+function findRoute(from,to){
+  if(from===to) return null;
+  const TRANSFER=6, best={}, prev={}, pq=[];
+  ROUTES.forEach(r=>{ if(r.stops.includes(from)){ const k=from+'|'+r.id; best[k]=0; pq.push([0,from,r.id]); } });
+  while(pq.length){
+    pq.sort((a,b)=>a[0]-b[0]);
+    const [c,s,rid]=pq.shift(), k=s+'|'+rid;
+    if(c>best[k]) continue;
+    if(s===to) return buildTrip(k,prev);
+    const r=R[rid], i=r.stops.indexOf(s), nb=[];
+    if(i>0) nb.push([r.stops[i-1],rid,1]);
+    if(i<r.stops.length-1) nb.push([r.stops[i+1],rid,1]);
+    ROUTES.forEach(o=>{ if(o.id!==rid && o.stops.includes(s)) nb.push([s,o.id,TRANSFER]); });
+    for(const [ns,nr,w] of nb){
+      const nk=ns+'|'+nr, nc=c+w;
+      if(best[nk]===undefined || nc<best[nk]){ best[nk]=nc; prev[nk]=k; pq.push([nc,ns,nr]); }
+    }
+  }
+  return null;
+}
+function buildTrip(k,prev){
+  const seq=[]; while(k){ const [s,r]=k.split('|'); seq.unshift({s,r}); k=prev[k]; }
+  let legs=[];
+  for(const st of seq){
+    let leg=legs[legs.length-1];
+    if(!leg || leg.route!==st.r){ leg={route:st.r,stops:[]}; legs.push(leg); }
+    if(leg.stops[leg.stops.length-1]!==st.s) leg.stops.push(st.s);
+  }
+  legs=legs.filter(l=>l.stops.length>1);
+  legs.forEach(l=>{
+    let px=0; for(let i=1;i<l.stops.length;i++){ const a=STOPS[l.stops[i-1]], b=STOPS[l.stops[i]]; px+=Math.hypot(a.x-b.x,a.y-b.y); }
+    l.km=px*KM_PER_PX; l.fare=Math.max(10,Math.round(l.km*2.45)); l.min=Math.round(l.km/20*60+l.stops.length);
+  });
+  return {legs, fare:legs.reduce((s,l)=>s+l.fare,0), min:legs.reduce((s,l)=>s+l.min,0)+(legs.length-1)*4,
+          km:legs.reduce((s,l)=>s+l.km,0), from:seq[0].s, to:seq[seq.length-1].s};
+}
+
+/* how far (px) a bus must travel to reach stop index si heading in direction need (+1 / -1) */
+function busDistTo(b,si,need){
+  const r=R[b.route], sd=r.cum[si], L=r.len, d=b.d;
+  if(need>0){
+    if(b.dir>0) return d<=sd ? sd-d : (L-d)+L+sd;
+    return d+sd;
+  } else {
+    if(b.dir<0) return d>=sd ? d-sd : d+L+(L-sd);
+    return (L-d)+(L-sd);
+  }
+}
+function nextBusFor(routeId,fromStop,toStop){
+  const r=R[routeId], i=r.stops.indexOf(fromStop), j=r.stops.indexOf(toStop), need=j>i?1:-1;
+  let best=null;
+  BUSES.filter(b=>b.route===routeId).forEach(b=>{ const dd=busDistTo(b,i,need); if(!best||dd<best.dd) best={b,dd}; });
+  return {bus:best.b, min:Math.max(1,Math.round(best.dd*MIN_PER_PX))};
+}
+function nextStopOf(b){
+  const r=R[b.route], k=b.pos.k;
+  return b.dir>0 ? r.stops[Math.min(k+1,r.stops.length-1)] : r.stops[k];
+}
+function minsToNextStop(b){
+  const r=R[b.route], s=nextStopOf(b), sd=r.cum[r.stops.indexOf(s)];
+  return Math.max(1,Math.round(Math.abs(sd-b.d)*MIN_PER_PX));
+}
+
+/* =========================================================
+   MAP (SVG)
+   ========================================================= */
+function bboxView(stopKeys,pad=50){
+  const xs=stopKeys.map(s=>STOPS[s].x), ys=stopKeys.map(s=>STOPS[s].y);
+  let x0=Math.min(...xs)-pad, x1=Math.max(...xs)+pad, y0=Math.min(...ys)-pad, y1=Math.max(...ys)+pad;
+  const minW=200; if(x1-x0<minW){ const c=(x0+x1)/2; x0=c-minW/2; x1=c+minW/2; }
+  if(y1-y0<minW*.65){ const c=(y0+y1)/2; y0=c-minW*.33; y1=c+minW*.33; }
+  return `${x0} ${y0} ${x1-x0} ${y1-y0}`;
+}
+function mapSVG({routes=ROUTES.map(r=>r.id), legs=null, height=420, view='0 0 400 560', focus=null, busFilter=null}={}){
+  const label=(s,k,bold)=>`<text x="${s.x+7}" y="${s.y+3}" font-size="${bold?9.5:8.3}" font-weight="${bold?700:500}" fill="#2c3d35" stroke="#eef3ef" stroke-width="3" paint-order="stroke">${s.en}</text>`;
+  let g=`<svg viewBox="${view}" style="height:${height}px;background:#eef3ef" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">`;
+  // background: grid, parks, water
+  g+=`<g stroke="#fff" stroke-width="2.2" opacity=".9">`;
+  for(let x=-40;x<=440;x+=38) g+=`<line x1="${x}" y1="-40" x2="${x+30}" y2="600"/>`;
+  for(let y=-40;y<=600;y+=38) g+=`<line x1="-40" y1="${y}" x2="440" y2="${y-14}"/>`;
+  g+=`</g>`;
+  g+=`<ellipse cx="62" cy="118" rx="34" ry="22" fill="#d3ead8"/><ellipse cx="208" cy="418" rx="20" ry="14" fill="#d3ead8"/><ellipse cx="96" cy="362" rx="12" ry="20" fill="#cfe6f3"/>`;
+  g+=`<path d="M290 160 C305 190 290 215 300 250 C306 270 280 300 252 296" stroke="#cfe6f3" stroke-width="9" fill="none" stroke-linecap="round"/>`;
+  g+=`<path d="M-20 548 C80 520 150 560 230 540 S350 515 420 530 L420 600 L-20 600Z" fill="#bfdff0"/>`;
+  g+=`<text x="40" y="566" font-size="9" fill="#6a9ab5" font-style="italic">Buriganga</text>`;
+  // routes
+  const dim = !!legs;
+  ROUTES.filter(r=>routes.includes(r.id)).forEach(r=>{
+    g+=`<polyline points="${r.pts.map(p=>p.x+','+p.y).join(' ')}" fill="none" stroke="${r.color}" stroke-width="${dim?3:4}" stroke-linecap="round" stroke-linejoin="round" opacity="${dim?.18:.85}"/>`;
+  });
+  // highlighted journey
+  const legStops=new Set();
+  if(legs){
+    legs.forEach(l=>{
+      const r=R[l.route], i=r.stops.indexOf(l.stops[0]), j=r.stops.indexOf(l.stops[l.stops.length-1]);
+      const pts=r.pts.slice(Math.min(i,j),Math.max(i,j)+1).map(p=>p.x+','+p.y).join(' ');
+      g+=`<polyline points="${pts}" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>`;
+      g+=`<polyline points="${pts}" fill="none" stroke="${r.color}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>`;
+      l.stops.forEach(s=>legStops.add(s));
+    });
+  }
+  // stops
+  const visibleStops=new Set(); ROUTES.filter(r=>routes.includes(r.id)).forEach(r=>r.stops.forEach(s=>visibleStops.add(s)));
+  Object.entries(STOPS).forEach(([k,s])=>{
+    if(!visibleStops.has(k)) return;
+    const on=legStops.has(k);
+    g+=`<circle cx="${s.x}" cy="${s.y}" r="${on?4:3.2}" fill="#fff" stroke="${on?'#13231c':'#5b6c64'}" stroke-width="${on?2:1.4}"/>`;
+    if(!legs || on) g+=label(s,k,on);
+  });
+  if(legs){
+    const first=STOPS[legs[0].stops[0]], last=STOPS[legs[legs.length-1].stops.slice(-1)[0]];
+    for(let i=1;i<legs.length;i++){ const t=STOPS[legs[i].stops[0]]; g+=`<circle cx="${t.x}" cy="${t.y}" r="6.5" fill="#fff" stroke="#13231c" stroke-width="2.5"/>`; }
+    g+=`<circle cx="${first.x}" cy="${first.y}" r="8" fill="#006a4e" stroke="#fff" stroke-width="3"/>`;
+    g+=`<path d="M${last.x} ${last.y} l-7 -14 a8 8 0 1 1 14 0 Z" fill="#f42a41" stroke="#fff" stroke-width="2"/><circle cx="${last.x}" cy="${last.y-17}" r="3" fill="#fff"/>`;
+  }
+  // buses
+  g+=`<g class="buses">`;
+  BUSES.filter(b=>(busFilter?busFilter.includes(b.route):routes.includes(b.route))).forEach(b=>{
+    const c=R[b.route].color, f=b.id===focus;
+    g+=`<g data-bus="${b.id}" transform="translate(${b.pos.x},${b.pos.y})" style="cursor:pointer">
+      ${f?`<circle r="10" fill="${c}" opacity=".35"><animate attributeName="r" values="8;20;8" dur="1.8s" repeatCount="indefinite"/><animate attributeName="opacity" values=".45;0;.45" dur="1.8s" repeatCount="indefinite"/></circle>`:''}
+      <circle r="11" fill="transparent"/>
+      <rect x="${f?-8:-6.5}" y="${f?-6:-5}" width="${f?16:13}" height="${f?12:10}" rx="3" fill="${c}" stroke="#fff" stroke-width="1.6"/>
+      <rect x="${f?-5:-4}" y="${f?-3.5:-3}" width="${f?10:8}" height="3" rx="1" fill="#fff" opacity=".9"/>
+    </g>`;
+  });
+  g+=`</g></svg>`;
+  return g;
+}
+
+/* =========================================================
+   VIEWS
+   ========================================================= */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const view=$('#view');
+const tk=n=>'৳'+n.toLocaleString('en-IN');
+const badge=r=>`<span class="rbadge" style="background:${r.color}">${r.no}</span>`;
+const occColor=o=>o>85?'#f42a41':o>65?'#f08c00':'#0a9f6e';
+
+function render(){
+  $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===state.tab));
+  view.innerHTML = ({plan:viewPlan, live:viewLive, tickets:viewTickets, helper:viewHelper})[state.tab]();
+  view.scrollTop=0;
+  bind();
+}
+
+/* ---------- PLAN ---------- */
+function viewPlan(){
+  const opts=sel=>Object.entries(STOPS).sort((a,b)=>a[1].en.localeCompare(b[1].en))
+    .map(([k,s])=>`<option value="${k}" ${k===sel?'selected':''}>${s.en} · ${s.bn}</option>`).join('');
+  return `
+  <div class="hello"><div class="muted bn">শুভ সকাল 👋</div><h2>Where are you going today?</h2></div>
+  <div class="card search">
+    <div class="field"><span class="dot g"></span><label>From<select id="from">${opts(state.from)}</select></label></div>
+    <button class="swap" id="swap" title="Swap">⇅</button>
+    <div class="field"><span class="dot r"></span><label>To<select id="to">${opts(state.to)}</select></label></div>
+    <button class="btn primary block" id="go">🔍 Find my bus</button>
+  </div>
+  <div class="chips">${POPULAR.map((p,i)=>`<button class="chip" data-pop="${i}">${STOPS[p[0]].en} → ${STOPS[p[1]].en}</button>`).join('')}</div>
+  <div id="result">${state.result?resultHTML(state.result):nearbyHTML()}</div>`;
+}
+function nearbyHTML(){
+  const stop=state.from;
+  const list=BUSES.filter(b=>R[b.route].stops.includes(stop)).map(b=>{
+    const r=R[b.route], si=r.stops.indexOf(stop);
+    return {b, min:Math.max(1,Math.round(Math.min(busDistTo(b,si,1),busDistTo(b,si,-1))*MIN_PER_PX))};
+  }).sort((a,b)=>a.min-b.min).slice(0,4);
+  return `<div class="sec-t">Arriving at ${STOPS[stop].en} <span class="pill live" style="margin-left:6px;text-transform:none;letter-spacing:0">Live</span></div>
+  <div class="card nearby">${list.map(({b,min})=>{const r=R[b.route];return `
+    <div class="bus">${badge(r)}
+      <div class="sp"><div style="font-weight:600;font-size:14px">${r.name}</div>
+        <div class="muted" style="font-size:12px">${STOPS[r.stops[0]].en} ⇄ ${STOPS[r.stops[r.stops.length-1]].en}</div>
+        <div class="occ"><i style="width:${b.occ}%;background:${occColor(b.occ)}"></i></div></div>
+      <div style="text-align:right"><div class="eta" data-near="${b.id}" style="font-size:18px">${min} min</div><div class="muted" style="font-size:11px">${100-b.occ>10?Math.round((100-b.occ)/3)+' seats':'Standing'}</div></div>
+    </div>`}).join('')}</div>`;
+}
+function resultHTML(res){
+  if(!res.legs) return `<div class="card empty">You're already there 🙂<br>Pick a different destination.</div>`;
+  const allStops=res.legs.flatMap(l=>l.stops);
+  let tl=`<div class="tl">`;
+  res.legs.forEach((l,i)=>{
+    const r=R[l.route], nb=nextBusFor(l.route,l.stops[0],l.stops[1]);
+    const a=STOPS[l.stops[0]], z=STOPS[l.stops[l.stops.length-1]];
+    tl+=`<div class="tl-stop" style="--c:${i===0?'#006a4e':r.color}">${a.en} <span class="bn muted">${a.bn}</span><small>${i===0?'Board here':'Change here — walk ~1 min'}</small></div>
+    <div class="tl-leg" style="--c:${r.color}">
+      <div class="row">${badge(r)}<div class="sp"><div class="nm">${r.name}</div><div class="bn muted" style="font-size:12px">${r.bn}</div></div>
+      <div style="text-align:right"><div class="eta" data-leg="${i}">${nb.min} min</div><div class="muted" style="font-size:11px">next bus</div></div></div>
+      <div class="meta">Towards ${STOPS[r.stops[r.stops.indexOf(l.stops[1])>r.stops.indexOf(l.stops[0])?r.stops.length-1:0]].en} · ${l.stops.length-1} stops · ${l.km.toFixed(1)} km · ${tk(l.fare)}</div>
+      <div class="meta">via ${l.stops.slice(1,-1).map(s=>STOPS[s].en).join(' → ')||'direct'}</div>
+    </div>`;
+    if(i===res.legs.length-1) tl+=`<div class="tl-stop" style="--c:#f42a41">${z.en} <span class="bn muted">${z.bn}</span><small>Get off here 🎉</small></div>`;
+  });
+  tl+=`</div>`;
+  const tr=res.legs.length-1;
+  return `
+  <div class="sec-t">Best route</div>
+  <div class="summary">
+    <div><b>${res.min}<small style="font-size:12px"> min</small></b><span>Travel time</span></div>
+    <div><b>${tk(res.fare)}</b><span>Total fare</span></div>
+    <div><b>${tr===0?'Direct':tr}</b><span>${tr===0?'No change':tr===1?'Bus change':'Bus changes'}</span></div>
+  </div>
+  <div class="card" style="padding:6px"><div class="mapwrap" id="planmap">${mapSVG({legs:res.legs,height:250,view:bboxView(allStops),busFilter:res.legs.map(l=>l.route)})}</div></div>
+  <div class="card">${tl}</div>
+  <div class="paybar"><button class="btn red block" id="pay">Pay fare ${tk(res.fare)} · bKash / Nagad</button></div>`;
+}
+
+/* ---------- LIVE ---------- */
+function viewLive(){
+  const routes=state.liveFilter?[state.liveFilter]:ROUTES.map(r=>r.id);
+  return `
+  <div class="row" style="margin:4px 2px 10px"><h2 class="sp">Live buses</h2><span class="pill live">${BUSES.length} live</span></div>
+  <div class="chips">
+    <button class="chip ${!state.liveFilter?'on':''}" data-filter="">All routes</button>
+    ${ROUTES.map(r=>`<button class="chip ${state.liveFilter===r.id?'on':''}" data-filter="${r.id}"><span style="color:${state.liveFilter===r.id?'#fff':r.color}">●</span> ${r.no} ${r.name.split(' ')[0]}</button>`).join('')}
+  </div>
+  <div class="card" style="padding:6px"><div class="mapwrap" id="livemap">${mapSVG({routes,height:400,focus:state.selBus})}</div></div>
+  <div id="buscard">${state.selBus?busCardHTML(BUSMAP[state.selBus]):`<div class="card empty">👆 Tap any bus on the map to see where it is, how full it is and who's on board as helper.</div>`}</div>
+  <p class="muted" style="text-align:center;font-size:12px;margin-top:4px">📡 Locations are shared from each bus helper's phone every 5 s</p>`;
+}
+function busCardHTML(b){
+  const r=R[b.route], ns=nextStopOf(b);
+  return `<div class="card bus-detail">
+    <div class="top"><div class="bigicon" style="background:${r.color}">🚌</div>
+      <div class="sp"><div style="font-weight:700">${r.name} ${badge(r)}</div><div class="muted">${b.plate}</div></div>
+      <button class="iconbtn" id="closebus">✕</button></div>
+    <div class="kv">
+      <div><span>Next stop</span><b id="dyn-ns">${STOPS[ns].en} · ${minsToNextStop(b)} min</b></div>
+      <div><span>Heading to</span><b>${STOPS[b.dir>0?r.stops[r.stops.length-1]:r.stops[0]].en}</b></div>
+      <div><span>Crowd</span><b style="color:${occColor(b.occ)}">${b.occ>85?'Full — standing':b.occ>65?'Busy':'Seats available'}</b></div>
+      <div><span>Helper</span><b>${b.helper} ⭐ ${b.rating}</b></div>
+      <div><span>Speed</span><b id="dyn-sp">${Math.round(b.speed*3.4)} km/h</b></div>
+      <div><span>Last GPS ping</span><b id="dyn-ping">2 s ago</b></div>
+    </div>
+    <button class="btn ghost block" style="margin-top:12px" id="alertme">🔔 Notify me when it's 2 stops away</button>
+  </div>`;
+}
+
+/* ---------- TICKETS ---------- */
+function viewTickets(){
+  return `
+  <div class="card wallet">
+    <div style="opacity:.85;font-size:13px">${state.name.en} Wallet · <span class="bn">${state.name.bn} ওয়ালেট</span></div>
+    <div class="bal">${tk(state.wallet)}</div>
+    <div class="row"><button class="btn" id="topup">+ Add money</button><button class="btn" id="topup2">bKash → Wallet</button></div>
+  </div>
+  <div class="sec-t">Active tickets</div>
+  ${state.tickets.length?state.tickets.map(t=>`
+    <div class="card ticket" data-ticket="${t.id}" style="cursor:pointer">
+      <div class="qr">${qrSVG(t.id)}</div>
+      <div class="sp"><div class="t">${STOPS[t.from].en} → ${STOPS[t.to].en}</div>
+        <div class="muted">${t.legs.map(l=>R[l].no).join(' + ')} · ${tk(t.fare)} · ${t.method}</div>
+        <div class="muted" style="font-size:12px">#${t.id} · valid until ${t.until}</div>
+        <span class="pill" style="margin-top:6px">${t.scanned?'✓ Used':'Show to helper'}</span></div>
+    </div>`).join(''):`<div class="card empty">🎫 No active tickets.<br>Plan a trip and pay to get a QR ticket.</div>`}
+  <div class="sec-t">Recent trips</div>
+  <div class="card">
+    ${[['Farmgate','Motijheel','D7','#1d6fd8',25,'Yesterday'],['Shahbag','Mirpur 1','L2','#7b3fe4',30,'12 Nov'],['Banani','Karwan Bazar','S1','#e63946',20,'11 Nov']].map(h=>`
+      <div class="hist"><span class="rbadge" style="background:${h[3]}">${h[2]}</span><div class="sp">${h[0]} → ${h[1]}<div class="muted" style="font-size:12px">${h[5]}</div></div><b>${tk(h[4])}</b></div>`).join('')}
+  </div>`;
+}
+
+/* ---------- HELPER ---------- */
+function viewHelper(){
+  const h=state.helper, r=R[MYBUS.route];
+  return `
+  <div class="card hprof"><div class="avatar">R</div>
+    <div class="sp"><div style="font-weight:700">Rahim Uddin <span class="muted" style="font-weight:500">· Helper</span></div>
+    <div class="muted" style="font-size:12px">${r.name} ${r.no} · ${MYBUS.plate}</div></div>
+    <span class="pill" style="background:#fef3c7;color:#92400e">⭐ ${MYBUS.rating}</span></div>
+  <div class="card golive ${h.online?'on':''}" id="golive">
+    <div class="gps">📡</div>
+    <div class="sp"><div style="font-weight:700">${h.online?'Live — sharing location':'Start trip & share location'}</div>
+      <div class="muted" style="font-size:12px">${h.online?'GPS ±4 m · updating every 5 s · 4G':'Passengers can\'t see your bus right now'}</div></div>
+    <div class="switch"></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span>Passengers on board</span><b id="h-on">${h.onboard}</b><div class="pm"><button data-pm="-1">−</button><button data-pm="1">+</button></div></div>
+    <div class="stat"><span>Today's total</span><b id="h-tot">${tk(h.cash+h.digital)}</b><div class="muted" style="font-size:11px;margin-top:6px">Trip 4 of 6</div></div>
+    <div class="stat"><span>📱 Digital fares</span><b id="h-dig" style="color:var(--g)">${tk(h.digital)}</b></div>
+    <div class="stat"><span>💵 Cash fares</span><b id="h-cash">${tk(h.cash)}</b></div>
+  </div>
+  <div class="actions">
+    <button class="act" id="scan"><i>📷</i>Scan ticket</button>
+    <button class="act" id="cash"><i>💵</i>Cash fare</button>
+    <button class="act" id="announce"><i>📢</i>Next stop</button>
+    <button class="act" id="report"><i>⚠️</i>Report</button>
+  </div>
+  <div class="card">
+    <div class="row" style="margin-bottom:8px"><b class="sp">My bus</b><span class="muted" id="h-ns">Next: ${STOPS[nextStopOf(MYBUS)].en}</span></div>
+    <div class="mapwrap">${mapSVG({routes:[MYBUS.route],height:200,view:'130 0 200 540',focus:MYBUS.id,busFilter:[]})
+      .replace('<g class="buses">',`<g class="buses"><g data-bus="${MYBUS.id}" transform="translate(${MYBUS.pos.x},${MYBUS.pos.y})"><circle r="10" fill="${r.color}" opacity=".35"><animate attributeName="r" values="8;22;8" dur="1.8s" repeatCount="indefinite"/></circle><rect x="-8" y="-6" width="16" height="12" rx="3" fill="${r.color}" stroke="#fff" stroke-width="1.6"/></g>`)}</div>
+  </div>
+  <div class="card feed"><div class="row" style="margin-bottom:4px"><b class="sp">Fare collection</b>${h.online?'<span class="pill live">Live</span>':''}</div>
+    <div id="feed">${h.feed.map(feedItem).join('')}</div></div>`;
+}
+const feedItem=f=>{
+  const s={bkash:['#e2136e','b'],nagad:['#f6921e','N'],rocket:['#8c3494','R'],wallet:['#006a4e','W'],cash:['#475569','৳'],scan:['#0a9f6e','✓']}[f.t]||['#475569','৳'];
+  return `<div class="it"><div class="ico" style="background:${s[0]}1a;color:${s[0]};font-weight:800">${s[1]}</div><div class="sp">${f.who}<div class="muted" style="font-size:11.5px">${f.when}</div></div><b>+${tk(f.a)}</b></div>`;
+};
+
+/* =========================================================
+   SHEETS (modals) & TOAST
+   ========================================================= */
+const sheet=$('#sheet'), overlay=$('#overlay');
+function openSheet(html){ sheet.innerHTML=`<div class="grab"></div>`+html; sheet.classList.add('on'); overlay.classList.add('on'); }
+function closeSheet(){ sheet.classList.remove('on'); overlay.classList.remove('on'); }
+overlay.onclick=closeSheet;
+let toastT; function toast(msg){ const t=$('#toast'); t.innerHTML=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2600); }
+
+const METHODS=[
+  {id:'bkash',name:'bKash',color:'#e2136e',l:'b'},
+  {id:'nagad',name:'Nagad',color:'#f6921e',l:'N'},
+  {id:'rocket',name:'Rocket',color:'#8c3494',l:'R'},
+  {id:'wallet',name:'Wallet',color:'#006a4e',l:'W'},
+];
+function openPay(){
+  const res=state.result;
+  const m=METHODS.map(x=>`<div class="method ${state.payMethod===x.id?'on':''}" data-m="${x.id}">
+      <div class="mlogo" style="background:${x.color}">${x.l}</div>
+      <div><div style="font-weight:600">${x.name}${x.id==='wallet'?` <span class="muted">· ${tk(state.wallet)}</span>`:''}</div>
+      <div class="muted" style="font-size:12px">${x.id==='wallet'?'Instant, no PIN under ৳100':'01•••••482'}</div></div>
+      <div class="radio"></div></div>`).join('');
+  openSheet(`<h3>Pay your fare</h3>
+    <div class="muted">${STOPS[res.from].en} → ${STOPS[res.to].en} · ${res.legs.map(l=>R[l.route].no).join(' + ')}</div>
+    <div class="card" style="margin:14px 0 4px;background:#f6f9f7">
+      ${res.legs.map(l=>`<div class="row" style="padding:3px 0">${badge(R[l.route])}<span class="sp" style="font-size:14px">${STOPS[l.stops[0]].en} → ${STOPS[l.stops[l.stops.length-1]].en}</span><b>${tk(l.fare)}</b></div>`).join('')}
+      <div class="row" style="border-top:1px dashed #cbd5d0;margin-top:8px;padding-top:8px"><b class="sp">Total</b><b style="font-size:18px">${tk(res.fare)}</b></div>
+    </div>
+    ${m}
+    <button class="btn primary block" style="margin-top:16px" id="payconfirm">Pay ${tk(res.fare)}</button>`);
+  $$('.method',sheet).forEach(el=>el.onclick=()=>{ state.payMethod=el.dataset.m; $$('.method',sheet).forEach(x=>x.classList.toggle('on',x===el)); });
+  $('#payconfirm').onclick=()=>{
+    const mm=METHODS.find(x=>x.id===state.payMethod);
+    if(mm.id==='wallet'){ if(state.wallet<res.fare){ toast('⚠️ Not enough balance. Add money in Tickets tab.'); return; } return processPay(mm); }
+    openSheet(`<div style="text-align:center"><div class="mlogo" style="background:${mm.color};width:56px;height:56px;border-radius:16px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px;margin:6px auto 10px">${mm.l}</div>
+      <h3>Enter ${mm.name} PIN</h3><div class="muted">Demo: type any 5 digits</div>
+      <div class="pin">${'<input maxlength="1" inputmode="numeric" type="password">'.repeat(5)}</div>
+      <button class="btn primary block" id="pinok">Confirm ${tk(res.fare)}</button></div>`);
+    const ins=$$('.pin input',sheet); ins[0].focus();
+    ins.forEach((inp,i)=>inp.oninput=()=>{ if(inp.value && ins[i+1]) ins[i+1].focus(); });
+    $('#pinok').onclick=()=>processPay(mm);
+  };
+}
+function processPay(mm){
+  const res=state.result;
+  openSheet(`<div class="spinner"></div><div style="text-align:center" class="muted">Processing with ${mm.name}…</div>`);
+  setTimeout(()=>{
+    const id='OT'+Math.random().toString(36).slice(2,8).toUpperCase();
+    const d=new Date(Date.now()+3*3600e3);
+    const t={id,from:res.from,to:res.to,fare:res.fare,legs:res.legs.map(l=>l.route),method:mm.name,until:d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),scanned:false};
+    state.tickets.unshift(t);
+    if(mm.id==='wallet') state.wallet-=res.fare;
+    openSheet(`<div class="success"><div class="tick">✓</div><h3>Fare paid!</h3><div class="muted">${tk(res.fare)} via ${mm.name}</div>
+      <div class="eticket"><div class="qr">${qrSVG(id)}</div>
+        <div class="row"><div class="sp"><div class="muted" style="font-size:11px">FROM</div><b>${STOPS[res.from].en}</b></div><div style="text-align:right"><div class="muted" style="font-size:11px">TO</div><b>${STOPS[res.to].en}</b></div></div>
+        <div class="row" style="margin-top:8px"><span class="muted sp" style="font-size:12px">#${id} · valid until ${t.until}</span>${res.legs.map(l=>badge(R[l.route])).join(' ')}</div></div>
+      <div class="muted" style="font-size:13px;margin-bottom:12px">Show this QR to the helper when you get on the bus</div>
+      <button class="btn primary block" id="done">Done</button></div>`);
+    $('#done').onclick=()=>{ closeSheet(); state.tab='tickets'; render(); };
+  },1400);
+}
+
+/* fake QR — just a deterministic pattern from the ticket id */
+function qrSVG(seed){
+  let h=0; for(const c of seed) h=(h*31+c.charCodeAt(0))>>>0;
+  const rnd=()=>{ h^=h<<13; h>>>=0; h^=h>>17; h^=h<<5; h>>>=0; return h/4294967296; };
+  const N=25; let s=`<svg viewBox="-1 -1 ${N+2} ${N+2}" xmlns="http://www.w3.org/2000/svg"><rect x="-1" y="-1" width="${N+2}" height="${N+2}" fill="#fff"/>`;
+  const finder=(x,y)=>`<rect x="${x}" y="${y}" width="7" height="7" fill="#13231c"/><rect x="${x+1}" y="${y+1}" width="5" height="5" fill="#fff"/><rect x="${x+2}" y="${y+2}" width="3" height="3" fill="#13231c"/>`;
+  const inF=(x,y)=>(x<8&&y<8)||(x>N-9&&y<8)||(x<8&&y>N-9);
+  for(let y=0;y<N;y++) for(let x=0;x<N;x++) if(!inF(x,y) && rnd()>.52) s+=`<rect x="${x}" y="${y}" width="1" height="1" fill="#13231c"/>`;
+  return s+finder(0,0)+finder(N-7,0)+finder(0,N-7)+`</svg>`;
+}
+
+/* =========================================================
+   EVENT BINDING
+   ========================================================= */
+function bind(){
+  if(state.tab==='plan'){
+    $('#from').onchange=e=>{ state.from=e.target.value; state.result=null; $('#result').innerHTML=nearbyHTML(); };
+    $('#to').onchange=e=>{ state.to=e.target.value; };
+    $('#swap').onclick=()=>{ [state.from,state.to]=[state.to,state.from]; state.result=null; render(); };
+    $('#go').onclick=()=>{ state.result=findRoute(state.from,state.to)||{legs:null}; render(); setTimeout(()=>$('.sec-t')?.scrollIntoView({behavior:'smooth'}),50); };
+    $$('[data-pop]').forEach(b=>b.onclick=()=>{ const p=POPULAR[b.dataset.pop]; state.from=p[0]; state.to=p[1]; state.result=findRoute(p[0],p[1]); render(); setTimeout(()=>$('.sec-t')?.scrollIntoView({behavior:'smooth'}),50); });
+    $('#pay')&&($('#pay').onclick=openPay);
+  }
+  if(state.tab==='live'){
+    $$('[data-filter]').forEach(b=>b.onclick=()=>{ state.liveFilter=b.dataset.filter||null; if(state.selBus && state.liveFilter && BUSMAP[state.selBus].route!==state.liveFilter) state.selBus=null; render(); });
+    $('#livemap').onclick=e=>{ const g=e.target.closest('[data-bus]'); if(g){ state.selBus=g.dataset.bus; const y=view.scrollTop; render(); view.scrollTop=y; } };
+    $('#closebus')&&($('#closebus').onclick=()=>{ state.selBus=null; render(); });
+    $('#alertme')&&($('#alertme').onclick=()=>toast('🔔 Alert set! We\'ll notify you 2 stops before it reaches you.'));
+  }
+  if(state.tab==='tickets'){
+    $('#topup').onclick=$('#topup2').onclick=()=>{ state.wallet+=100; toast('✅ ৳100 added from bKash'); render(); };
+    $$('[data-ticket]').forEach(el=>el.onclick=()=>{ const t=state.tickets.find(x=>x.id===el.dataset.ticket);
+      openSheet(`<div class="success"><h3>Your ticket</h3><div class="muted">${STOPS[t.from].en} → ${STOPS[t.to].en}</div><div class="eticket"><div class="qr" style="width:200px">${qrSVG(t.id)}</div><div style="text-align:center" class="muted">#${t.id} · ${tk(t.fare)} · valid until ${t.until}</div></div><button class="btn primary block" onclick="closeSheet()">Close</button></div>`); });
+  }
+  if(state.tab==='helper'){
+    const h=state.helper;
+    $('#golive').onclick=()=>{ h.online=!h.online; toast(h.online?'📡 You are live! Passengers can now see your bus.':'⏸ Location sharing paused.'); const y=view.scrollTop; render(); view.scrollTop=y; };
+    $$('[data-pm]').forEach(b=>b.onclick=()=>{ h.onboard=Math.max(0,h.onboard+ +b.dataset.pm); $('#h-on').textContent=h.onboard; });
+    $('#announce').onclick=()=>toast(`📢 "Next stop: ${STOPS[nextStopOf(MYBUS)].en}" sent to passengers on board`);
+    $('#report').onclick=()=>{
+      openSheet(`<h3>Report a problem</h3><div class="muted">Passengers waiting on your route will be notified</div>
+        ${[['🚦','Heavy traffic jam'],['🛠️','Bus breakdown'],['🧍','Bus is full'],['🚧','Road blocked / diversion']].map(x=>`<div class="method" data-rep="${x[1]}"><div class="mlogo" style="background:#f3f6f4;font-size:20px">${x[0]}</div><div style="font-weight:600">${x[1]}</div></div>`).join('')}`);
+      $$('[data-rep]',sheet).forEach(el=>el.onclick=()=>{ closeSheet(); toast(`✅ Reported "${el.dataset.rep}" — 38 waiting passengers notified`); });
+    };
+    $('#cash').onclick=()=>{
+      let amt=20;
+      openSheet(`<h3>Record cash fare</h3><div class="muted">Keeps your digital record matched with the cash bag</div>
+        <div class="amts">${[10,20,30,40,50,60,80,100].map(a=>`<button data-a="${a}" class="${a===20?'on':''}">৳${a}</button>`).join('')}</div>
+        <button class="btn primary block" id="cashok">Record ৳20</button>`);
+      $$('[data-a]',sheet).forEach(b=>b.onclick=()=>{ amt=+b.dataset.a; $$('[data-a]',sheet).forEach(x=>x.classList.toggle('on',x===b)); $('#cashok').textContent='Record ৳'+amt; });
+      $('#cashok').onclick=()=>{ h.cash+=amt; h.onboard++; h.feed.unshift({t:'cash',a:amt,who:'Cash fare',when:'just now'}); closeSheet(); toast('💵 Cash fare recorded'); render(); };
+    };
+    $('#scan').onclick=()=>{
+      openSheet(`<h3>Scan passenger ticket</h3><div class="muted">Point the camera at the passenger's QR</div><div class="viewfinder"><div class="box"></div><div class="line"></div></div><div class="muted" style="text-align:center">Scanning…</div>`);
+      setTimeout(()=>{
+        const t=state.tickets.find(x=>!x.scanned);
+        const info=t?{id:t.id,trip:`${STOPS[t.from].en} → ${STOPS[t.to].en}`,fare:t.fare,m:t.method}:{id:'OT'+Math.random().toString(36).slice(2,8).toUpperCase(),trip:'Banani → Shahbag',fare:30,m:'bKash'};
+        if(t) t.scanned=true;
+        h.onboard++; h.feed.unshift({t:'scan',a:0,who:`Ticket #${info.id} verified`,when:'just now'});
+        openSheet(`<div class="success"><div class="tick">✓</div><h3>Valid ticket</h3><div class="muted">#${info.id}</div>
+          <div class="card" style="margin:14px 0;background:#f6f9f7;text-align:left">
+            <div class="row"><span class="sp muted">Trip</span><b>${info.trip}</b></div>
+            <div class="row" style="margin-top:6px"><span class="sp muted">Paid</span><b>${tk(info.fare)} · ${info.m}</b></div></div>
+          <button class="btn primary block" id="scandone">Next passenger</button></div>`);
+        $('#scandone').onclick=()=>{ closeSheet(); render(); };
+      },1800);
+    };
+  }
+}
+
+/* =========================================================
+   LIVE LOOPS
+   ========================================================= */
+let last=performance.now();
+function tick(now){
+  const dt=Math.min(.1,(now-last)/1000); last=now;
+  BUSES.forEach(b=>{
+    const r=R[b.route];
+    if(b===MYBUS && state.tab==='helper' && !state.helper.online){ /* paused when offline */ }
+    else { b.d+=b.dir*b.speed*dt; if(b.d>=r.len){b.d=r.len;b.dir=-1} if(b.d<=0){b.d=0;b.dir=1} }
+    b.pos=pointAt(r,b.d);
+  });
+  $$('[data-bus]').forEach(el=>{ const b=BUSMAP[el.dataset.bus]; el.setAttribute('transform',`translate(${b.pos.x.toFixed(1)},${b.pos.y.toFixed(1)})`); });
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+let ping=0;
+setInterval(()=>{
+  // clock
+  const d=new Date(); $('#clock').textContent=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}).replace(/\s?[AP]M/i,'');
+  // ETAs on plan screen
+  $$('[data-near]').forEach(el=>{ const b=BUSMAP[el.dataset.near], r=R[b.route], si=r.stops.indexOf(state.from);
+    el.textContent=Math.max(1,Math.round(Math.min(busDistTo(b,si,1),busDistTo(b,si,-1))*MIN_PER_PX))+' min'; });
+  if(state.result?.legs) $$('[data-leg]').forEach(el=>{ const l=state.result.legs[el.dataset.leg]; el.textContent=nextBusFor(l.route,l.stops[0],l.stops[1]).min+' min'; });
+  // live bus card
+  if(state.selBus && $('#dyn-ns')){ const b=BUSMAP[state.selBus]; $('#dyn-ns').textContent=`${STOPS[nextStopOf(b)].en} · ${minsToNextStop(b)} min`;
+    ping=(ping+1)%5; $('#dyn-ping').textContent=(ping+1)+' s ago'; $('#dyn-sp').textContent=Math.round(b.speed*3.4+Math.random()*4-2)+' km/h'; }
+  if($('#h-ns')) $('#h-ns').textContent='Next: '+STOPS[nextStopOf(MYBUS)].en;
+},1000);
+
+// simulated incoming digital payments for the helper while live
+setInterval(()=>{
+  const h=state.helper; if(!h.online) return;
+  const m=['bkash','nagad','rocket','wallet'][Math.floor(Math.random()*4)];
+  const a=[15,20,25,30,35,40][Math.floor(Math.random()*6)];
+  const nm={bkash:'bKash',nagad:'Nagad',rocket:'Rocket',wallet:'Wallet'}[m];
+  h.digital+=a; h.onboard++;
+  h.feed.unshift({t:m,a,who:`${nm} · 01•••••${Math.floor(100+Math.random()*899)}`,when:'just now'}); h.feed=h.feed.slice(0,8);
+  if(state.tab==='helper' && $('#feed')){
+    $('#feed').innerHTML=h.feed.map(feedItem).join('');
+    $('#h-dig').textContent=tk(h.digital); $('#h-tot').textContent=tk(h.cash+h.digital); $('#h-on').textContent=h.onboard;
+    toast(`💰 +${tk(a)} received via ${nm}`);
+  }
+},5000);
+
+/* =========================================================
+   NAV & INIT
+   ========================================================= */
+$('#tabs').onclick=e=>{ const t=e.target.closest('.tab'); if(!t) return; state.tab=t.dataset.tab; closeSheet(); render(); };
+$('#bell').onclick=()=>toast('🚌 Doel D7 is 3 stops away from Mirpur 10');
+
+// status bar: hidden at first, slides in on hover (CSS) or on first tap/scroll (touch screens)
+const showStatus=()=>$('#screen').classList.add('sb-on');
+['touchstart','click'].forEach(ev=>$('#screen').addEventListener(ev,showStatus,{once:true}));
+view.addEventListener('scroll',showStatus,{once:true});
+
+render();
+</script>
+</body>
+</html>
